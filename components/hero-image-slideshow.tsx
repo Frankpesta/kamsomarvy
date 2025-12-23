@@ -3,23 +3,15 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 
 // Hero images - you can replace these with actual images in the public folder
 const heroImages = [
-  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80",
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80",
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=80",
-  "https://images.unsplash.com/photo-1600607687644-c7171b42498b?w=1200&q=80",
+  "/hero1.jpg",
+  "/hero2.jpg",
+  "/hero3.jpg",
+  "/hero4.jpg",
 ];
-
-// Alternative: Use local images from public folder
-// const heroImages = [
-//   "/images/hero/building-1.jpg",
-//   "/images/hero/building-2.jpg",
-//   "/images/hero/building-3.jpg",
-//   "/images/hero/building-4.jpg",
-// ];
 
 export function HeroImageSlideshow() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -62,7 +54,7 @@ export function HeroImageSlideshow() {
             unoptimized={src.startsWith("http")}
           />
           {/* Subtle overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent" />
         </div>
       ))}
 

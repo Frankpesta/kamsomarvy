@@ -12,15 +12,6 @@ const heroImages = [
   "/hero4.jpg",
 ];
 
-// Alternative: Use local images from public folder
-// Create a folder: public/images/hero/ and add your images there
-// const heroImages = [
-//   "/images/hero/building-1.jpg",
-//   "/images/hero/building-2.jpg",
-//   "/images/hero/building-3.jpg",
-//   "/images/hero/building-4.jpg",
-// ];
-
 export function HeroSlideshow() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
