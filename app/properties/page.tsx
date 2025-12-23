@@ -35,7 +35,7 @@ if (typeof window !== "undefined") {
 
 const ITEMS_PER_PAGE = 12;
 
-export default function PropertiesPage() {
+function PropertiesPageContent() {
   const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
   const [listingType, setListingType] = useState<"all" | "sale" | "rent">(
