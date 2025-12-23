@@ -62,17 +62,19 @@ export const list = query({
     subscribedOnly: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    let query = ctx.db.query("newsletterSubscriptions");
-
-    if (args.subscribedOnly !== undefined) {
-      query = query.withIndex("by_subscribed", (q) =>
-        q.eq("subscribed", args.subscribedOnly as boolean)
-      );
-    } else {
-      query = query.withIndex("by_created");
-    }
-
-    const subscriptions = await query.collect();
+    // Avoid reassigning query between initializer and query types
+    const subscriptions = args.subscribedOnly !== undefined
+      ? await ctx.db
+          .query("newsletterSubscriptions")
+          .withIndex("by_subscribed", (q) =>
+            q.eq("subscribed", args.subscribedOnly as boolean)
+          )
+          .collect()
+      : await ctx.db
+          .query("newsletterSubscriptions")
+          .withIndex("by_created")
+          .collect();
+    
     return subscriptions.sort((a, b) => b.createdAt - a.createdAt);
   },
 });
