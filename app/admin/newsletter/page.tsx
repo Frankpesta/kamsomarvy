@@ -93,10 +93,12 @@ export default function NewsletterPage() {
   useEffect(() => {
     if (typeof window === "undefined" || !gsap || !ScrollTrigger) return;
 
-    const ctx = gsap.context(() => {
+    const gsapInstance = gsap;
+
+    const ctx = gsapInstance.context(() => {
       // Animate header
       if (headerRef.current) {
-        gsap.fromTo(
+        gsapInstance.fromTo(
           headerRef.current,
           { opacity: 0, y: -20 },
           { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
@@ -106,7 +108,7 @@ export default function NewsletterPage() {
       // Animate stats cards
       if (statsRef.current) {
         const cards = statsRef.current.querySelectorAll(".stat-card");
-        gsap.fromTo(
+        gsapInstance.fromTo(
           cards,
           { opacity: 0, y: 30, scale: 0.95 },
           {
@@ -127,7 +129,7 @@ export default function NewsletterPage() {
         // Add hover animations
         cards.forEach((card) => {
           card.addEventListener("mouseenter", () => {
-            gsap.to(card, {
+            gsapInstance.to(card, {
               scale: 1.02,
               y: -5,
               duration: 0.3,
@@ -136,7 +138,7 @@ export default function NewsletterPage() {
           });
 
           card.addEventListener("mouseleave", () => {
-            gsap.to(card, {
+            gsapInstance.to(card, {
               scale: 1,
               y: 0,
               duration: 0.3,
@@ -149,7 +151,7 @@ export default function NewsletterPage() {
       // Animate table rows
       if (tableRef.current) {
         const rows = tableRef.current.querySelectorAll("tbody tr");
-        gsap.fromTo(
+        gsapInstance.fromTo(
           rows,
           { opacity: 0, x: -30 },
           {
