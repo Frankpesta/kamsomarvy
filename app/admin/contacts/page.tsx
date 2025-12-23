@@ -86,6 +86,10 @@ export default function ContactsPage() {
   const [selectedSubmission, setSelectedSubmission] = useState<Id<"contactSubmissions"> | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  const headerRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!sessionToken && !admin && !currentAdmin) {
       router.push("/admin/login");
