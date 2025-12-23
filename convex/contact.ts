@@ -28,15 +28,17 @@ export const list = query({
     unreadOnly: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    let query = ctx.db.query("contactSubmissions");
-
-    if (args.unreadOnly) {
-      query = query.withIndex("by_read", (q) => q.eq("read", false));
-    } else {
-      query = query.withIndex("by_created");
-    }
-
-    const submissions = await query.collect();
+    // Avoid reassigning query between initializer and query types
+    const submissions = args.unreadOnly
+      ? await ctx.db
+          .query("contactSubmissions")
+          .withIndex("by_read", (q) => q.eq("read", false))
+          .collect()
+      : await ctx.db
+          .query("contactSubmissions")
+          .withIndex("by_created")
+          .collect();
+    
     return submissions.sort((a, b) => b.createdAt - a.createdAt);
   },
 });
