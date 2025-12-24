@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { useAuthStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -13,17 +14,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import Link from "next/link";
-import { Plus, Trash2, ArrowLeft } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/admin-layout";
 
 export default function AdminAdminsPage() {
   const router = useRouter();
   const { sessionToken, admin } = useAuthStore();
-  const currentAdmin = useQuery(
+  const currentAdminQuery = useQuery(
     api.auth.getCurrentAdmin,
     sessionToken ? { sessionToken } : "skip"
   );
+  
+  // Type guard to safely extract admin properties
+  const getAdminProperty = <T,>(adminData: unknown, property: string): T | null => {
+    if (adminData && typeof adminData === "object" && property in adminData) {
+      return (adminData as Record<string, T>)[property];
+    }
+    return null;
+  };
+
+  const currentAdminRole = getAdminProperty<string>(currentAdminQuery, "role");
+  const currentAdminId = getAdminProperty<Id<"admins">>(currentAdminQuery, "_id");
+  const adminRole = getAdminProperty<string>(admin, "role");
+  const adminId = getAdminProperty<Id<"admins">>(admin, "_id");
+
   const admins = useQuery(api.admins.list);
   const inviteAdmin = useMutation(api.admins.invite);
   const deleteAdmin = useMutation(api.admins.remove);
@@ -31,12 +45,12 @@ export default function AdminAdminsPage() {
   const [inviteData, setInviteData] = useState({ name: "", email: "", role: "admin" });
 
   useEffect(() => {
-    if (!sessionToken && !admin && !currentAdmin) {
+    if (!sessionToken && !admin && !currentAdminQuery) {
       router.push("/admin/login");
     }
-  }, [sessionToken, admin, currentAdmin, router]);
+  }, [sessionToken, admin, currentAdminQuery, router]);
 
-  const isSuperAdmin = currentAdmin?.role === "super_admin" || admin?.role === "super_admin";
+  const isSuperAdmin = currentAdminRole === "super_admin" || adminRole === "super_admin";
 
   useEffect(() => {
     if (!isSuperAdmin) {
@@ -50,21 +64,21 @@ export default function AdminAdminsPage() {
       setIsInviteOpen(false);
       setInviteData({ name: "", email: "", role: "admin" });
       alert("Admin invited successfully!");
-    } catch (error: any) {
-      alert(error.message || "Failed to invite admin");
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Failed to invite admin");
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: Id<"admins">) => {
     if (!confirm("Are you sure you want to remove this admin?")) return;
     try {
-      await deleteAdmin({ id: id as any });
-    } catch (error) {
+      await deleteAdmin({ id });
+    } catch {
       alert("Failed to delete admin");
     }
   };
 
-  if (!currentAdmin && !admin) {
+  if (!currentAdminQuery && !admin) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
@@ -165,7 +179,7 @@ export default function AdminAdminsPage() {
                           {new Date(adminItem.createdAt).toLocaleDateString()}
                         </TableCell>
                         <TableCell>
-                          {adminItem._id !== (currentAdmin?._id || admin?._id) && (
+                          {adminItem._id !== (currentAdminId || adminId) && (
                             <Button
                               variant="ghost"
                               size="sm"

@@ -95,7 +95,13 @@ export const login = mutation({
     const sessionToken = createSessionToken();
     const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
 
-    sessions.set(sessionToken, { adminId: admin._id, expiresAt });
+    // Store session in database
+    await ctx.db.insert("sessions", {
+      token: sessionToken,
+      adminId: admin._id,
+      expiresAt,
+      createdAt: Date.now(),
+    });
 
     // Update last login
     await ctx.db.patch(admin._id, {
@@ -110,8 +116,16 @@ export const login = mutation({
 export const getCurrentAdmin = query({
   args: { sessionToken: v.string() },
   handler: async (ctx, args) => {
-    const session = sessions.get(args.sessionToken);
+    const session = await ctx.db
+      .query("sessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+
     if (!session || session.expiresAt < Date.now()) {
+      // Clean up expired session
+      if (session) {
+        await ctx.db.delete(session._id);
+      }
       return null;
     }
 
