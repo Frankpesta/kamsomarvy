@@ -122,10 +122,7 @@ export const getCurrentAdmin = query({
       .first();
 
     if (!session || session.expiresAt < Date.now()) {
-      // Clean up expired session
-      if (session) {
-        await ctx.db.delete(session._id);
-      }
+      // Note: Cannot delete in query (read-only). Expired sessions will be ignored.
       return null;
     }
 
