@@ -62,9 +62,9 @@ function Navbar() {
               <Image
                 src="/kamsologo.png"
                 alt="Kamsomarvy"
-                fill
+                width={100}
+                height={100}
                 className="object-contain"
-                sizes="36px"
                 priority
               />
             </div>
