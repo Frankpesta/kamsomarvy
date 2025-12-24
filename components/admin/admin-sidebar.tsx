@@ -12,7 +12,6 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarFooter,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -20,9 +19,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
-  Building2,
   Users,
   Settings,
   UserCog,
@@ -32,6 +30,7 @@ import {
   Mail,
   MailCheck,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store";
@@ -47,7 +46,7 @@ const menuItems = [
   {
     title: "Properties",
     url: "/admin/properties",
-    icon: Building2,
+    icon: Home,
   },
   {
     title: "Representatives",
@@ -87,8 +86,21 @@ export function AdminSidebar() {
     sessionToken ? { sessionToken } : "skip"
   );
 
-  const isSuperAdmin = currentAdmin?.role === "super_admin" || admin?.role === "super_admin";
-  const adminName = currentAdmin?.name || admin?.name || "Admin";
+  // Type guard to safely extract admin properties
+  const getAdminProperty = <T,>(adminData: unknown, property: string): T | null => {
+    if (adminData && typeof adminData === "object" && property in adminData) {
+      return (adminData as Record<string, T>)[property];
+    }
+    return null;
+  };
+
+  const currentAdminRole = getAdminProperty<string>(currentAdmin, "role");
+  const currentAdminName = getAdminProperty<string>(currentAdmin, "name");
+  const adminRole = getAdminProperty<string>(admin, "role");
+  const adminName = getAdminProperty<string>(admin, "name");
+
+  const isSuperAdmin = currentAdminRole === "super_admin" || adminRole === "super_admin";
+  const displayName = currentAdminName || adminName || "Admin";
 
   const handleLogout = () => {
     clearSession();
@@ -99,11 +111,17 @@ export function AdminSidebar() {
     <Sidebar collapsible="none">
       <SidebarHeader className="border-b">
         <div className="flex items-center gap-2 px-2 py-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Building2 className="h-4 w-4" />
+          <div className="relative h-8 w-8 rounded-lg overflow-hidden shrink-0">
+            <Image
+              src="/kamsologo.png"
+              alt="Kamsomarvy"
+              fill
+              className="object-contain"
+              sizes="32px"
+              priority
+            />
           </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold">Kamsomarvy</span>
+          <div className="flex flex-col min-w-0">
             <span className="text-xs text-muted-foreground">Admin Panel</span>
           </div>
         </div>
@@ -165,7 +183,7 @@ export function AdminSidebar() {
                 <SidebarMenuButton className="w-full">
                   <Avatar className="h-8 w-8">
                     <AvatarFallback>
-                      {adminName
+                      {displayName
                         .split(" ")
                         .map((n: string) => n[0])
                         .join("")
@@ -173,9 +191,9 @@ export function AdminSidebar() {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col items-start flex-1 min-w-0">
-                    <span className="text-sm font-medium truncate w-full">{adminName}</span>
+                    <span className="text-sm font-medium truncate w-full">{displayName}</span>
                     <span className="text-xs text-muted-foreground truncate w-full">
-                      {currentAdmin?.role || admin?.role || "Admin"}
+                      {currentAdminRole || adminRole || "Admin"}
                     </span>
                   </div>
                 </SidebarMenuButton>

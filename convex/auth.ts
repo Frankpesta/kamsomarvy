@@ -18,8 +18,7 @@ function createSessionToken(): string {
   return Array.from(array, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-// Store sessions in memory (in production, use Convex table)
-const sessions = new Map<string, { adminId: Id<"admins">; expiresAt: number }>();
+// Sessions are now stored in the database
 
 // Check if email exists
 export const checkEmailExists = query({
@@ -125,7 +124,15 @@ export const getCurrentAdmin = query({
 export const logout = mutation({
   args: { sessionToken: v.string() },
   handler: async (ctx, args) => {
-    sessions.delete(args.sessionToken);
+    const session = await ctx.db
+      .query("sessions")
+      .withIndex("by_token", (q) => q.eq("token", args.sessionToken))
+      .first();
+
+    if (session) {
+      await ctx.db.delete(session._id);
+    }
+
     return { success: true };
   },
 });

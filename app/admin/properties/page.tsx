@@ -401,7 +401,7 @@ function PropertyRow({ property, onDelete, isDeleting }: PropertyRowProps) {
 
   return (
     <TableRow>
-      <TableCell>
+      <TableCell className="hidden sm:table-cell">
         {imageUrl ? (
           <div className="relative w-16 h-16">
             <Image
@@ -409,6 +409,7 @@ function PropertyRow({ property, onDelete, isDeleting }: PropertyRowProps) {
               alt={property.title}
               fill
               className="object-cover rounded"
+              sizes="64px"
             />
           </div>
         ) : (
@@ -417,30 +418,41 @@ function PropertyRow({ property, onDelete, isDeleting }: PropertyRowProps) {
           </div>
         )}
       </TableCell>
-      <TableCell className="font-medium">{property.title}</TableCell>
-      <TableCell>{formatPrice(property.price)}</TableCell>
-      <TableCell>
+      <TableCell className="font-medium">
+        <div className="space-y-1">
+          <div className="font-medium">{property.title}</div>
+          <div className="text-xs text-muted-foreground md:hidden">
+            {formatPrice(property.price)}
+          </div>
+          <div className="flex gap-1 flex-wrap md:hidden">
+            <Badge variant="secondary" className="text-xs">{property.category}</Badge>
+            {property.featured && <Badge className="text-xs">Featured</Badge>}
+          </div>
+        </div>
+      </TableCell>
+      <TableCell className="hidden md:table-cell">{formatPrice(property.price)}</TableCell>
+      <TableCell className="hidden lg:table-cell">
         <Badge variant="secondary">{property.category}</Badge>
       </TableCell>
-      <TableCell>
+      <TableCell className="hidden lg:table-cell">
         <Badge variant="outline">{property.propertyType}</Badge>
       </TableCell>
-      <TableCell>
+      <TableCell className="hidden md:table-cell">
         {property.featured ? (
           <Badge>Featured</Badge>
         ) : (
           <span className="text-muted-foreground">-</span>
         )}
       </TableCell>
-      <TableCell>
-        <div className="flex items-center gap-2">
+      <TableCell className="text-right">
+        <div className="flex items-center justify-end gap-1 sm:gap-2">
           <Link href={`/properties/${property._id}`}>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <Eye className="h-4 w-4" />
             </Button>
           </Link>
           <Link href={`/admin/properties/${property._id}/edit`}>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <Edit className="h-4 w-4" />
             </Button>
           </Link>
@@ -449,6 +461,7 @@ function PropertyRow({ property, onDelete, isDeleting }: PropertyRowProps) {
             size="sm"
             onClick={() => onDelete(property._id)}
             disabled={isDeleting}
+            className="h-8 w-8 p-0"
           >
             <Trash2 className="h-4 w-4 text-destructive" />
           </Button>

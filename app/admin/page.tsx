@@ -40,10 +40,23 @@ if (typeof window !== "undefined") {
 export default function AdminDashboardPage() {
   const router = useRouter();
   const { sessionToken, admin } = useAuthStore();
-  const currentAdmin = useQuery(
+  const currentAdminQuery = useQuery(
     api.auth.getCurrentAdmin,
     sessionToken ? { sessionToken } : "skip"
   );
+  
+  // Type guard to safely extract admin properties
+  const getAdminProperty = <T,>(adminData: unknown, property: string): T | null => {
+    if (adminData && typeof adminData === "object" && property in adminData) {
+      return (adminData as Record<string, T>)[property];
+    }
+    return null;
+  };
+
+  const currentAdminName = getAdminProperty<string>(currentAdminQuery, "name");
+  const adminName = getAdminProperty<string>(admin, "name");
+  const displayName = currentAdminName || adminName || "Admin";
+
   const stats = useQuery(api.properties.getStats);
   const contactStats = useQuery(api.contact.list, {});
   const newsletterStats = useQuery(api.newsletter.getStats);
@@ -56,10 +69,10 @@ export default function AdminDashboardPage() {
   const chartsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!sessionToken && !admin && !currentAdmin) {
+    if (!sessionToken && !admin && !currentAdminQuery) {
       router.push("/admin/login");
     }
-  }, [sessionToken, admin, currentAdmin, router]);
+  }, [sessionToken, admin, currentAdminQuery, router]);
 
   // GSAP Animations
   useEffect(() => {
@@ -223,7 +236,7 @@ export default function AdminDashboardPage() {
     return () => ctx.revert();
   }, [stats, contactStats, newsletterStats, recentSubmissions]);
 
-  if (!currentAdmin && !admin) {
+  if (!currentAdminQuery && !admin) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p>Loading...</p>
@@ -242,7 +255,7 @@ export default function AdminDashboardPage() {
           <div>
             <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
             <p className="text-muted-foreground mt-1">
-              Welcome back, <span className="font-medium text-foreground">{currentAdmin?.name || admin?.name}</span>
+              Welcome back, <span className="font-medium text-foreground">{displayName}</span>
             </p>
           </div>
           <div className="flex items-center gap-2">

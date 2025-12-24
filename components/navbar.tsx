@@ -12,7 +12,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowRight, Building2, Menu, X } from "lucide-react";
+import { ArrowRight, Menu, X } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -21,12 +22,24 @@ function Navbar() {
   const { sessionToken, admin, clearSession } = useAuthStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const currentAdmin = useQuery(
+  const currentAdminQuery = useQuery(
     api.auth.getCurrentAdmin,
     sessionToken ? { sessionToken } : "skip"
   );
+  
+  // Type guard to safely extract admin properties
+  const getAdminProperty = <T,>(adminData: unknown, property: string): T | null => {
+    if (adminData && typeof adminData === "object" && property in adminData) {
+      return (adminData as Record<string, T>)[property];
+    }
+    return null;
+  };
 
-  const isAdmin = !!currentAdmin || !!admin;
+  const currentAdminName = getAdminProperty<string>(currentAdminQuery, "name");
+  const adminName = getAdminProperty<string>(admin, "name");
+  const displayName = currentAdminName || adminName || "Admin";
+
+  const isAdmin = !!currentAdminQuery || !!admin;
   const isAdminPage = pathname?.startsWith("/admin");
 
   const handleLogout = () => {
@@ -44,13 +57,17 @@ function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b bg-background/70 backdrop-blur-xl supports-backdrop-filter:bg-background/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-[72px] items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="inline-flex size-9 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/15">
-              <Building2 className="size-5 text-primary" />
-            </span>
-            <span className="text-lg font-semibold tracking-tight">
-              Kamsomarvy
-            </span>
+          <Link href="/" className="flex items-center">
+            <div className="relative size-9 rounded-xl overflow-hidden">
+              <Image
+                src="/kamsologo.png"
+                alt="Kamsomarvy"
+                fill
+                className="object-contain"
+                sizes="36px"
+                priority
+              />
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
@@ -94,7 +111,7 @@ function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm">
-                    {currentAdmin?.name || admin?.name || "Admin"}
+                    {displayName}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">

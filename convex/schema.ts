@@ -84,5 +84,14 @@ export default defineSchema({
     .index("by_email", ["email"])
     .index("by_subscribed", ["subscribed"])
     .index("by_created", ["createdAt"]),
+
+  sessions: defineTable({
+    token: v.string(),
+    adminId: v.id("admins"),
+    expiresAt: v.number(),
+    createdAt: v.number(),
+  })
+    .index("by_token", ["token"])
+    .index("by_admin", ["adminId"]),
 });
 

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Building2, Mail, MapPin, Phone, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Mail, MapPin, Phone, ArrowRight, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "convex/react";
@@ -39,11 +40,17 @@ export function Footer() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <div className="flex items-center gap-2.5">
-              <span className="inline-flex size-10 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-primary/15">
-                <Building2 className="size-5 text-primary" />
-              </span>
-              <span className="text-lg font-semibold tracking-tight">Kamsomarvy</span>
+            <div className="flex items-center">
+              <div className="relative size-10 rounded-2xl overflow-hidden">
+                <Image
+                  src="/kamsologo.png"
+                  alt="Kamsomarvy"
+                  fill
+                  className="object-contain"
+                  sizes="40px"
+                  priority
+                />
+              </div>
             </div>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground max-w-sm">
               Your best partner when you aim to secure your investment in real estate.
