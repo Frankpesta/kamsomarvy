@@ -58,12 +58,12 @@ function Navbar() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-[72px] items-center justify-between gap-4">
           <Link href="/" className="flex items-center">
-            <div className="relative size-9 rounded-xl overflow-hidden">
+            <div className="relative rounded-xl overflow-hidden">
               <Image
                 src="/kamsologo.png"
                 alt="Kamsomarvy"
-                width={300}
-                height={300}
+                width={100}
+                height={100}
                 className="object-contain"
                 priority
               />

@@ -41,12 +41,12 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <div className="flex items-center">
-              <div className="relative size-10 rounded-2xl overflow-hidden">
+              <div className="relative rounded-2xl overflow-hidden">
                 <Image
                   src="/kamsologo.png"
                   alt="Kamsomarvy"
-                  width={300}
-                  height={300}
+                  width={100}
+                  height={100}
                   className="object-contain"
                   priority
                 />

@@ -111,12 +111,12 @@ export function AdminSidebar() {
     <Sidebar collapsible="none">
       <SidebarHeader className="border-b">
         <div className="flex items-center gap-2 px-2 py-2">
-          <div className="relative h-8 w-8 rounded-lg overflow-hidden shrink-0">
+          <div className="relative rounded-lg overflow-hidden shrink-0">
             <Image
               src="/kamsologo.png"
               alt="Kamsomarvy"
-              width={300}
-              height={300}
+              width={100}
+              height={100}
               className="object-contain"
               priority
             />
