@@ -62,8 +62,8 @@ function Navbar() {
               <Image
                 src="/kamsologo.png"
                 alt="Kamsomarvy"
-                width={100}
-                height={100}
+                width={170}
+                height={170}
                 className="object-contain"
                 priority
               />
